@@ -74,6 +74,24 @@ plt.grid(True)
 st.pyplot(plt)
 plt.clf()
 
+# 4. Comparison of Water Depth and Snow Depth Over Years
+st.subheader("Comparison of Water Depth and Snow Depth Over Years")
+combined_data = snow_depth_data.groupby("Water Year")["Snow Depth (in)"].mean().reset_index()
+combined_data = combined_data.rename(columns={"Snow Depth (in)": "Average Snow Depth (in)"})
+water_depth_avg = ground_water_data.groupby("Water Year")["Static Water Level (ft)"].mean().reset_index()
+water_depth_avg = water_depth_avg.rename(columns={"Static Water Level (ft)": "Average Water Level (ft)"})
+
+plt.figure(figsize=(12, 6))
+plt.plot(combined_data["Water Year"], combined_data["Average Snow Depth (in)"], label="Average Snow Depth (in)", marker='o')
+plt.plot(water_depth_avg["Water Year"], water_depth_avg["Average Water Level (ft)"], label="Average Water Level (ft)", marker='o')
+plt.title("Average Snow Depth vs Water Depth Over Years")
+plt.xlabel("Year")
+plt.ylabel("Depth")
+plt.legend()
+plt.grid(True)
+st.pyplot(plt)
+plt.clf()
+
 # Allow user to explore datasets below
 st.header("Explore the Data")
 
