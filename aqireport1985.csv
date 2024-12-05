@@ -1,0 +1,5 @@
+"CBSA Code","CBSA","# Days with AQI","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","AQI Maximum","AQI 90th Percentile","AQI Median","# Days CO","# Days NO2","# Days O3","# Days PM2.5","# Days PM10"
+"10740","Albuquerque, NM","365","139","207","16",".","3",".","218","87","57","107","26","213",".","19"
+"22140","Farmington, NM","228","215","13",".",".",".",".","68","47","20","89","139",".",".","."
+"29740","Las Cruces, NM","365","267","88","10",".",".",".","143","74","43","84",".","281",".","."
+"42140","Santa Fe, NM","353","349","4",".",".",".",".","62","34","18","353",".",".",".","."
