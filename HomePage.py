@@ -58,59 +58,30 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Homepage Title
 st.markdown("<div class='title'>Environmental Data Hub</div>", unsafe_allow_html=True)
 
-# Overview Section
 st.markdown(
-    "<div class='overview'>Explore insights into water resources, air quality, and their interconnections over time. Select one of the dashboards below to begin your analysis:</div>",
+    "<div class='overview'>Explore insights into water resources, air quality, and their interconnections over time. Use the sidebar to navigate through the dashboards.</div>",
     unsafe_allow_html=True
 )
 
-# Dashboard Links Section
-st.markdown("<div class='dashboard-section'>", unsafe_allow_html=True)
+# Sidebar navigation
+st.sidebar.title("Dashboard Navigation")
+st.sidebar.info("Select a dashboard to explore different datasets and insights.")
 
-# Water Resource Dashboard Card
-st.markdown(
-    """
-    <div class='dashboard-card'>
-        <a href='pages/Water_Resource_Dashboard.py' style='text-decoration: none;'>
-            <img src='https://via.placeholder.com/150/1b4965/ffffff?text=Water+Dashboard' alt='Water Dashboard' style='border-radius: 50%;'>
-            <div class='dashboard-title'>🌊 Water Resource Dashboard</div>
-        </a>
-    </div>
-    """,
-    unsafe_allow_html=True
+dashboard = st.sidebar.radio(
+    "Go to:",
+    ("Home", "Water Resource Dashboard", "Air Quality Viewer", "Correlation Dashboard")
 )
 
-# Air Quality Viewer Dashboard Card
-st.markdown(
-    """
-    <div class='dashboard-card'>
-        <a href='pages/Air_Quality_Viewer.py' style='text-decoration: none;'>
-            <img src='https://via.placeholder.com/150/1b4965/ffffff?text=Air+Quality' alt='Air Quality Dashboard' style='border-radius: 50%;'>
-            <div class='dashboard-title'>🌫️ Air Quality Viewer</div>
-        </a>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+if dashboard == "Home":
+    st.markdown("<div class='overview'>Welcome to the Environmental Data Hub! Use the sidebar to navigate to individual dashboards.</div>", unsafe_allow_html=True)
 
-# Correlation Dashboard Card
-st.markdown(
-    """
-    <div class='dashboard-card'>
-        <a href='pages/Correlation_Dashboard.py' style='text-decoration: none;'>
-            <img src='https://via.placeholder.com/150/1b4965/ffffff?text=Correlations' alt='Correlation Dashboard' style='border-radius: 50%;'>
-            <div class='dashboard-title'>🔗 Correlation Dashboard</div>
-        </a>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+elif dashboard == "Water Resource Dashboard":
+    st.markdown("[Click here to view the Water Resource Dashboard](pages/appwater.py)")
 
-st.markdown("</div>", unsafe_allow_html=True)
+elif dashboard == "Air Quality Viewer":
+    st.markdown("[Click here to view the Air Quality Viewer Dashboard](pages/app.py)")
 
-# Coming Soon Section
-st.markdown("<div class='coming-soon'>Stay tuned for more insights and dashboards as we expand our analysis capabilities!</div>", unsafe_allow_html=True)
-
+elif dashboard == "Correlation Dashboard":
+    st.markdown("[Click here to view the Correlation Dashboard](pages/Correlation.py)")
