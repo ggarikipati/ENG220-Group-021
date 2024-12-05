@@ -2,132 +2,142 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# File names (in the same directory as app.py)
-file_names = {
-    "2024": "California2024.xlsx",
-    "2023": "California2023.xlsx",
-    "2022": "California2022.xlsx",
-    "2021": "California2021.xlsx",
-    "2020": "California2020.xlsx",
-    "2019": "California2019.xlsx",
-}
+# Load all AQI datasets
+uploaded_files = [
+    "aqireport1980.csv",
+    "aqireport1985.csv",
+    "aqireport1990.csv",
+    "aqireport1995.csv",
+    "aqireport1998.csv",
+    "aqireport2000.csv",
+    "aqireport2002.csv",
+    "aqireport2004.csv",
+    "aqireport2006.csv",
+    "aqireport2008.csv",
+    "aqireport2010.csv",
+    "aqireport2012.csv",
+    "aqireport2014.csv",
+    "aqireport2016.csv",
+    "aqireport2018.csv",
+    "aqireport2020.csv",
+    "aqireport2022.csv",
+    "aqireport2024.csv"
+]
 
-# Measurement information for each sheet
-measurement_info = {
-    "CO": "Measured in parts per million (ppm)",
-    "Pb": "Measured in micrograms per cubic meter (µg/m³)",
-    "NO2": "Measured in parts per billion (ppb)",
-    "Ozone": "Measured in parts per million (ppm)",
-    "PM2.5": "Measured in micrograms per cubic meter (µg/m³)",
-}
+def load_data(files):
+    dataframes = [pd.read_csv(file) for file in files]
+    combined_data = pd.concat(dataframes, ignore_index=True)
+    return combined_data
 
-# Function to load data
-def load_data(file, sheet_name):
-    try:
-        # Read the sheet
-        df = pd.read_excel(file, sheet_name=sheet_name)
-        
-        # Extract column B as the key measurement column
-        measurement_col = df.columns[1]  # Assume column B is always the second column
-        
-        # Ensure the 'Date' column is properly parsed
-        df['Date'] = pd.to_datetime(df['Date'], errors='coerce')  # Ensure Date is datetime
-        df = df.dropna(subset=['Date'])  # Drop invalid dates
-        df['Month'] = df['Date'].dt.month  # Extract month
-        df['Day'] = df['Date'].dt.day  # Extract day (for finer granularity)
-        df['Year'] = df['Date'].dt.year  # Extract year
-        return df, measurement_col
-    except Exception as e:
-        st.error(f"Error loading {sheet_name} from {file}: {e}")
-        return pd.DataFrame(), None
+# Load and clean data
+data = load_data(uploaded_files)
+data["Year"] = pd.to_datetime(data["Date"], errors="coerce").dt.year
 
-# Streamlit app
-st.title("California Air Quality Data Viewer")
+# Streamlit app title
+st.title("Air Quality Viewer Dashboard")
 
-# Sidebar for options
-sheet_options = ["CO", "Pb", "NO2", "Ozone", "PM2.5"]
-selected_sheet = st.sidebar.selectbox("Select Pollutant Sheet", sheet_options)
+# Sidebar for interactivity
+st.sidebar.header("Dashboard Options")
 
-# Display measurement details for the selected sheet
-st.sidebar.write(f"**Measurement Info**: {measurement_info[selected_sheet]}")
+# Pollutant selection
+pollutants = ["PM2.5", "PM10", "NO2", "CO", "O3"]
+selected_pollutant = st.sidebar.selectbox("Select a Pollutant to Analyze", pollutants)
 
-# Measurement type options
-measurement_options = {"Measurement": "Measurement (column B)"}
-if selected_sheet != "Pb":  # Only add AQI if not Pb
-    measurement_options["AQI"] = "Daily AQI Value"
+# Year range selection
+years = sorted(data["Year"].dropna().unique())
+selected_years = st.sidebar.slider(
+    "Select Year Range",
+    int(min(years)),
+    int(max(years)),
+    (int(min(years)), int(max(years)))
+)
 
-selected_measurement = st.sidebar.radio("Select Data Type", list(measurement_options.keys()))
+# Filter data based on selection
+filtered_data = data[(data["Year"] >= selected_years[0]) & (data["Year"] <= selected_years[1])]
 
-# Year selection
-all_years = list(file_names.keys())
-selected_years = st.sidebar.multiselect("Select Years", all_years, default=all_years)
+# Display all charts
+st.header("Air Quality Insights")
 
-# Load and combine data
-dataframes = []
-measurement_column_name = None  # This will be dynamically set
-for year, file in file_names.items():
-    if year in selected_years:  # Only load selected years
-        df, measurement_col = load_data(file, selected_sheet)
-        if not df.empty:
-            dataframes.append(df)
-            # Set the measurement column name based on the first loaded file
-            if measurement_column_name is None:
-                measurement_column_name = measurement_col
+# 1. Year-to-Year AQI Trends
+st.subheader("Year-to-Year AQI Trends")
+aqi_trends = filtered_data.groupby("Year")["AQI"].mean().reset_index()
+plt.figure(figsize=(10, 6))
+plt.plot(aqi_trends["Year"], aqi_trends["AQI"], marker='o', color='blue')
+plt.title("Year-to-Year AQI Trends")
+plt.xlabel("Year")
+plt.ylabel("Average AQI")
+plt.grid(True)
+st.pyplot(plt)
+plt.clf()
 
-if dataframes:
-    all_data = pd.concat(dataframes, ignore_index=True)
+# 2. Total Pollutant Values by Year
+st.subheader("Total Pollutant Values by Year")
+pollutant_totals = filtered_data.groupby("Year")[selected_pollutant].sum().reset_index()
+plt.figure(figsize=(10, 6))
+plt.bar(pollutant_totals["Year"], pollutant_totals[selected_pollutant], color="green")
+plt.title(f"Total {selected_pollutant} Levels by Year")
+plt.xlabel("Year")
+plt.ylabel(f"Total {selected_pollutant}")
+plt.grid(axis="y")
+st.pyplot(plt)
+plt.clf()
 
-    if selected_measurement == "AQI":
-        measurement_column_name = "Daily AQI Value"
+# 3. Proportional Contributions of Pollutants
+st.subheader("Proportional Contributions of Pollutants")
+pollutant_sums = filtered_data[pollutants].sum()
+plt.figure(figsize=(8, 8))
+plt.pie(
+    pollutant_sums,
+    labels=pollutants,
+    autopct="%1.1f%%",
+    startangle=140,
+    colors=plt.cm.tab10.colors
+)
+plt.title("Proportional Contributions of Pollutants")
+st.pyplot(plt)
+plt.clf()
 
-    if measurement_column_name not in all_data.columns:
-        st.error(f"The selected measurement column '{measurement_column_name}' is not available in the {selected_sheet} sheet.")
-    else:
-        # Group data by Year and Month for comparison
-        grouped_data = all_data.groupby(['Year', 'Month'])[measurement_column_name].mean().reset_index()
+# 4. Monthly Averages for Selected Pollutant
+st.subheader(f"Monthly Averages of {selected_pollutant}")
+filtered_data["Month"] = pd.to_datetime(filtered_data["Date"], errors="coerce").dt.month
+monthly_avg = filtered_data.groupby("Month")[selected_pollutant].mean().reset_index()
+plt.figure(figsize=(10, 6))
+plt.plot(monthly_avg["Month"], monthly_avg[selected_pollutant], marker='o', color='purple')
+plt.title(f"Monthly Averages of {selected_pollutant}")
+plt.xlabel("Month")
+plt.ylabel(f"Average {selected_pollutant}")
+plt.grid(True)
+st.pyplot(plt)
+plt.clf()
 
-        # Line Plot for Year-to-Year Comparison
-        st.subheader(f"{selected_sheet} Year-to-Year Comparison")
-        line_fig, ax = plt.subplots(figsize=(10, 6))
+# 5. Top Polluted Locations
+st.subheader("Top Polluted Locations")
+top_locations = filtered_data.groupby("Location")["AQI"].mean().nlargest(10).reset_index()
+plt.figure(figsize=(10, 6))
+plt.barh(top_locations["Location"], top_locations["AQI"], color="red")
+plt.title("Top 10 Most Polluted Locations")
+plt.xlabel("Average AQI")
+plt.ylabel("Location")
+plt.gca().invert_yaxis()
+st.pyplot(plt)
+plt.clf()
 
-        # Plot each year
-        for year in grouped_data['Year'].unique():
-            year_data = grouped_data[grouped_data['Year'] == year]
-            ax.plot(
-                year_data['Month'], 
-                year_data[measurement_column_name], 
-                label=f"{year}"
-            )
-        
-        ax.set_title(f"Year-to-Year Comparison of {measurement_column_name} for {selected_sheet}")
-        ax.set_xlabel("Month")
-        ax.set_ylabel(measurement_column_name)
-        ax.legend()
-        ax.set_xticks(range(1, 13))
-        ax.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
-        st.pyplot(line_fig)
+# Heatmap of AQI Levels (if geospatial data is available)
+if "Latitude" in data.columns and "Longitude" in data.columns:
+    st.subheader("Heatmap of AQI Levels")
+    import folium
+    from streamlit_folium import folium_static
 
-        # Only show Bar Chart and Pie Chart if Measurement is selected
-        if selected_measurement == "Measurement":
-            # Bar Chart for Total Values by Year
-            st.subheader(f"{selected_sheet} Total Values by Year")
-            bar_data = all_data.groupby('Year')[measurement_column_name].sum().reset_index()
-            bar_fig, ax = plt.subplots()
-            ax.bar(bar_data['Year'], bar_data[measurement_column_name])
-            ax.set_title(f"Total {measurement_column_name} by Year")
-            ax.set_xlabel("Year")
-            ax.set_ylabel(f"Total {measurement_column_name}")
-            st.pyplot(bar_fig)
+    aqi_map = folium.Map(location=[filtered_data["Latitude"].mean(), filtered_data["Longitude"].mean()], zoom_start=6)
 
-            # Pie Chart for Proportions by Year
-            st.subheader(f"{selected_sheet} Proportion of Total Values by Year")
-            pie_fig, ax = plt.subplots()
-            ax.pie(bar_data[measurement_column_name], labels=bar_data['Year'], autopct='%1.1f%%', startangle=90)
-            ax.set_title(f"Proportion of {measurement_column_name} by Year")
-            st.pyplot(pie_fig)
+    for _, row in filtered_data.iterrows():
+        folium.CircleMarker(
+            location=[row["Latitude"], row["Longitude"]],
+            radius=5,
+            color="red",
+            fill=True,
+            fill_opacity=0.6,
+            popup=f"AQI: {row['AQI']}"
+        ).add_to(aqi_map)
 
-        # Display grouped data
-        st.subheader("Grouped Data (Monthly Averages)")
-        st.write(grouped_data)
-else:
-    st.error("No data available. Please check the input files or selected sheet.")
+    folium_static(aqi_map)
