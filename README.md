@@ -13,7 +13,7 @@ This project focuses on building interactive dashboards to analyze and visualize
   - Displays AQI (Air Quality Index) category distribution.
   - Shows pollutant data by year (e.g., CO, NO2, O3, PM2.5, PM10).
   - Provides summary statistics for selected CBSAs (Core-Based Statistical Areas).
-- **Data Source:** [EPA.gov](https://www.epa.gov/).
+- **Data Source:** [EPA.gov](https://www.epa.gov/) and [Air Quality Monitoring Data](https://waterdata.usgs.gov/monitoring-location/08315500/#period=P7D&showMedian=true&dataTypeId=continuous-00054-0).
 
 ### 2. Water Resource Dashboard
 - **Focus:** Snow depth and groundwater data in New Mexico.
@@ -23,7 +23,7 @@ This project focuses on building interactive dashboards to analyze and visualize
   - Snow-water level correlations.
   - Regional resource contribution analysis.
   - Identification of top sites with significant resource decline.
-- **Data Sources:** Cleaned datasets on snow depth and groundwater levels.
+- **Data Sources:** [USGS Water Monitoring Data](https://waterdata.usgs.gov/monitoring-location/08315500/#period=P7D&showMedian=true&dataTypeId=continuous-00054-0) and cleaned datasets on snow depth and groundwater levels.
 
 ### 3. Correlation Dashboard
 - **Focus:** Exploring relationships between air quality and water resource data.
@@ -70,10 +70,9 @@ This project was developed using **Streamlit** and **Python**. Although group me
 
 ## Data Sources
 
-- **Air Quality Data:** [EPA.gov](https://www.epa.gov/)
-- **Water Resources Data:** Cleaned datasets derived from New Mexico environmental studies.
+- **Air Quality Data:** [EPA.gov](https://www.epa.gov/) and [Air Quality Monitoring Data](https://waterdata.usgs.gov/monitoring-location/08315500/#period=P7D&showMedian=true&dataTypeId=continuous-00054-0).
+- **Water Resources Data:** [USGS Water Monitoring Data](https://waterdata.usgs.gov/monitoring-location/08315500/#period=P7D&showMedian=true&dataTypeId=continuous-00054-0) and cleaned datasets derived from New Mexico environmental studies.
 
 ## Acknowledgments
 
 Special thanks to ChatGPT for aiding in Python coding and streamlining the development process.
-
