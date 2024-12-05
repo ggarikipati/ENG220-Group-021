@@ -42,6 +42,8 @@ if all(col in available_columns for col in ["Good", "Moderate", "Unhealthy_for_S
     # Ensure numeric data for plotting
     category_sums = pd.to_numeric(category_sums, errors="coerce").fillna(0)
 
+    st.write("Category Sums:", category_sums)  # Debugging line
+
     if category_sums.sum() > 0:
         plt.figure(figsize=(8, 6))
         plt.bar(category_sums.index, category_sums.values, color='skyblue')
