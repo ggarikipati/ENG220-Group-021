@@ -100,5 +100,3 @@ plt.clf()
 # Display grouped data
 st.subheader("Grouped Data")
 st.write(grouped_data)
-
-        folium_static(aqi_map)
