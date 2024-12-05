@@ -31,7 +31,7 @@ st.write(correlation_data)
 
 # Correlation Heatmap without seaborn
 st.header("Correlation Heatmap")
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(10, 6)
 corr_matrix = correlation_data.drop(columns="Water Year").corr()
 plt.imshow(corr_matrix, cmap="coolwarm", aspect="auto")
 plt.colorbar(label="Correlation Coefficient")
@@ -99,4 +99,3 @@ st.markdown(
     """
 )
 
-)
