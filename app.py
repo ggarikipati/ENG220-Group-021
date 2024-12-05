@@ -2,32 +2,20 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# File path for the combined dataset
+# File path for the dataset
 file_path = "aqi_combined_1980_2024.csv"
 
-# Load the combined dataset
+# Load the dataset
 data = pd.read_csv(file_path)
 
-# Ensure required columns exist
-required_columns = ["Year", "Month", "Date", "AQI", "PM2.5", "PM10", "NO2", "CO", "O3"]
-missing_columns = [col for col in required_columns if col not in data.columns]
-if missing_columns:
-    st.error(f"The following required columns are missing: {', '.join(missing_columns)}")
-    st.stop()
+# Ensure required columns exist and adapt dynamically
+available_columns = data.columns
 
 # Sidebar options
 st.sidebar.header("Dashboard Options")
 
-# Pollutant selection
-pollutants = ["PM2.5", "PM10", "NO2", "CO", "O3"]
-selected_pollutant = st.sidebar.selectbox("Select a Pollutant to Analyze", pollutants)
-
-# Data type selection
-data_type_options = {"Measurement": selected_pollutant, "AQI": "AQI"}
-selected_data_type = st.sidebar.radio("Select Data Type", list(data_type_options.keys()))
-
 # Year range selection
-years = sorted(data["Year"].dropna().unique())
+years = sorted(data["Year"].unique())
 selected_years = st.sidebar.slider(
     "Select Year Range",
     int(min(years)),
@@ -35,68 +23,59 @@ selected_years = st.sidebar.slider(
     (int(min(years)), int(max(years)))
 )
 
-# Filter data based on selection
+# CBSA selection
+selected_cbsa = st.sidebar.selectbox("Select CBSA", data["CBSA"].unique())
+
+# Filter data based on selections
 filtered_data = data[(data["Year"] >= selected_years[0]) & (data["Year"] <= selected_years[1])]
+filtered_data = filtered_data[filtered_data["CBSA"] == selected_cbsa]
 
-# Display pollutant information
-st.sidebar.write(f"**Selected Pollutant**: {selected_pollutant}")
-
-# Display all charts
+# Display header
 st.title("Air Quality Viewer Dashboard")
 
-# 1. Year-to-Year Trends
-st.subheader(f"Year-to-Year {selected_data_type} Trends")
-grouped_data = filtered_data.groupby(["Year", "Month"])[data_type_options[selected_data_type]].mean().reset_index()
-plt.figure(figsize=(10, 6))
-for year in grouped_data["Year"].unique():
-    yearly_data = grouped_data[grouped_data["Year"] == year]
-    plt.plot(yearly_data["Month"], yearly_data[data_type_options[selected_data_type]], marker='o', label=str(year))
-plt.title(f"Year-to-Year Comparison of {selected_data_type}")
-plt.xlabel("Month")
-plt.ylabel(selected_data_type)
-plt.legend(title="Year")
-plt.xticks(range(1, 13), ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
-plt.grid(True)
-st.pyplot(plt)
-plt.clf()
+# 1. AQI Days by Category
+if all(col in available_columns for col in ["Good", "Moderate", "Unhealthy_for_Sensitive_Groups", "Unhealthy", "Very_Unhealthy", "Hazardous"]):
+    st.subheader("AQI Days by Category")
+    categories = ["Good", "Moderate", "Unhealthy_for_Sensitive_Groups", "Unhealthy", "Very_Unhealthy", "Hazardous"]
+    category_sums = filtered_data[categories].sum()
+    plt.figure(figsize=(8, 6))
+    plt.bar(category_sums.index, category_sums.values, color='skyblue')
+    plt.title("AQI Days by Category")
+    plt.xlabel("Category")
+    plt.ylabel("Number of Days")
+    plt.grid(axis="y")
+    st.pyplot(plt)
+    plt.clf()
 
-# 2. Total Values by Year
-st.subheader(f"Total {selected_data_type} Values by Year")
-total_values = filtered_data.groupby("Year")[data_type_options[selected_data_type]].sum().reset_index()
-plt.figure(figsize=(10, 6))
-plt.bar(total_values["Year"], total_values[data_type_options[selected_data_type]], color="green")
-plt.title(f"Total {selected_data_type} by Year")
-plt.xlabel("Year")
-plt.ylabel(f"Total {selected_data_type}")
-plt.grid(axis="y")
-st.pyplot(plt)
-plt.clf()
+# 2. Pollutant Days by Year
+pollutant_columns = ["#_Days_CO", "#_Days_NO2", "#_Days_O3", "#_Days_PM2.5", "#_Days_PM10"]
+if all(col in available_columns for col in pollutant_columns):
+    st.subheader("Pollutant Days by Year")
+    yearly_pollutants = filtered_data.groupby("Year")[pollutant_columns].sum()
+    yearly_pollutants.plot(kind="bar", stacked=True, figsize=(10, 6), color=plt.cm.tab10.colors)
+    plt.title("Pollutant Days by Year")
+    plt.xlabel("Year")
+    plt.ylabel("Number of Days")
+    plt.legend(title="Pollutant")
+    plt.grid(axis="y")
+    st.pyplot(plt)
+    plt.clf()
 
-# 3. Proportion of Values by Year
-st.subheader(f"Proportion of {selected_data_type} by Year")
-plt.figure(figsize=(8, 8))
-plt.pie(
-    total_values[data_type_options[selected_data_type]],
-    labels=total_values["Year"],
-    autopct='%1.1f%%',
-    startangle=90
-)
-plt.title(f"Proportion of {selected_data_type} by Year")
-st.pyplot(plt)
-plt.clf()
+# 3. AQI Statistics
+if all(col in available_columns for col in ["AQI_Maximum", "AQI_90th_Percentile", "AQI_Median"]):
+    st.subheader("AQI Statistics")
+    aqi_stats = filtered_data.groupby("Year")["AQI_Maximum", "AQI_90th_Percentile", "AQI_Median"].mean()
+    aqi_stats.plot(figsize=(10, 6), marker='o')
+    plt.title("AQI Statistics Over Time")
+    plt.xlabel("Year")
+    plt.ylabel("AQI Value")
+    plt.legend(title="Statistic")
+    plt.grid(True)
+    st.pyplot(plt)
+    plt.clf()
 
-# 4. Monthly Averages
-st.subheader(f"Monthly Averages of {selected_data_type}")
-monthly_avg = filtered_data.groupby("Month")[data_type_options[selected_data_type]].mean().reset_index()
-plt.figure(figsize=(10, 6))
-plt.plot(monthly_avg["Month"], monthly_avg[data_type_options[selected_data_type]], marker='o', color='purple')
-plt.title(f"Monthly Averages of {selected_data_type}")
-plt.xlabel("Month")
-plt.ylabel(f"Average {selected_data_type}")
-plt.grid(True)
-st.pyplot(plt)
-plt.clf()
+# 4. CBSA Summary Table
+st.subheader("CBSA Summary Table")
+st.write(filtered_data)
 
-# Display grouped data
-st.subheader("Grouped Data")
 st.write(grouped_data)
