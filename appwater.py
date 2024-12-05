@@ -10,6 +10,10 @@ ground_water_path = "ground_water_cleaned.csv"  # Ensure this file is in the sam
 snow_depth_data = pd.read_csv(snow_depth_path)
 ground_water_data = pd.read_csv(ground_water_path)
 
+# Ensure a consistent year column exists in both datasets
+if "Water Year" not in ground_water_data.columns:
+    ground_water_data["Water Year"] = pd.to_datetime(ground_water_data["DATA_COLLECTION_DT"], errors="coerce").dt.year
+
 # Streamlit app title
 st.title("Water Metrics Dashboard")
 
