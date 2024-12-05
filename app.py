@@ -38,14 +38,21 @@ if all(col in available_columns for col in ["Good", "Moderate", "Unhealthy_for_S
     st.subheader("AQI Days by Category")
     categories = ["Good", "Moderate", "Unhealthy_for_Sensitive_Groups", "Unhealthy", "Very_Unhealthy", "Hazardous"]
     category_sums = filtered_data[categories].sum()
-    plt.figure(figsize=(8, 6))
-    plt.bar(category_sums.index, category_sums.values, color='skyblue')
-    plt.title("AQI Days by Category")
-    plt.xlabel("Category")
-    plt.ylabel("Number of Days")
-    plt.grid(axis="y")
-    st.pyplot(plt)
-    plt.clf()
+
+    # Ensure numeric data for plotting
+    category_sums = pd.to_numeric(category_sums, errors="coerce").fillna(0)
+
+    if category_sums.sum() > 0:
+        plt.figure(figsize=(8, 6))
+        plt.bar(category_sums.index, category_sums.values, color='skyblue')
+        plt.title("AQI Days by Category")
+        plt.xlabel("Category")
+        plt.ylabel("Number of Days")
+        plt.grid(axis="y")
+        st.pyplot(plt)
+        plt.clf()
+    else:
+        st.warning("No valid data available for AQI Days by Category.")
 
 # 2. Pollutant Days by Year
 pollutant_columns = ["#_Days_CO", "#_Days_NO2", "#_Days_O3", "#_Days_PM2.5", "#_Days_PM10"]
@@ -78,4 +85,3 @@ if all(col in available_columns for col in ["AQI_Maximum", "AQI_90th_Percentile"
 st.subheader("CBSA Summary Table")
 st.write(filtered_data)
 
-st.write(grouped_data)
