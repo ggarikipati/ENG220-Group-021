@@ -19,7 +19,6 @@ st.sidebar.header("Filter Options")
 # Snow Depth Filters
 st.sidebar.subheader("Snow Depth Data")
 snow_selected_site = st.sidebar.selectbox("Select Site", sorted(snow_depth_data["Site"].unique()), key="snow_site")
-snow_selected_year = st.sidebar.selectbox("Select Year", sorted(snow_depth_data["Water Year"].unique()), key="snow_year")
 
 # Display important data insights directly
 st.header("Key Insights")
@@ -38,22 +37,39 @@ plt.grid(True)
 st.pyplot(plt)
 plt.clf()
 
-# Allow user to explore datasets below
-st.header("Explore the Data")
-
 # Snow Depth Data Section
-st.subheader("Snow Depth Data")
+st.header("Snow Depth Data")
+
+# Line graph: Average snow depth per year for the selected site
+st.subheader("Yearly Snow Depth Trends")
+site_snow_depth = snow_depth_data[snow_depth_data['Site'] == snow_selected_site]
+if not site_snow_depth.empty:
+    avg_snow_per_year = site_snow_depth.groupby('Water Year')['Snow Depth (in)'].mean().reset_index()
+    plt.figure(figsize=(10, 6))
+    plt.plot(avg_snow_per_year['Water Year'], avg_snow_per_year['Snow Depth (in)'], marker='o', label=f"Average Snow Depth at {snow_selected_site}")
+    plt.title(f"Snow Depth Trends at {snow_selected_site}")
+    plt.xlabel("Year")
+    plt.ylabel("Average Snow Depth (in)")
+    plt.legend()
+    plt.grid(True)
+    st.pyplot(plt)
+    plt.clf()
+else:
+    st.warning(f"No data available for site: {snow_selected_site}")
+
+# Additional exploration: Month-by-month trends for the selected year
+snow_selected_year = st.sidebar.selectbox("Select Year", sorted(snow_depth_data["Water Year"].unique()), key="snow_year")
+st.subheader("Monthly Snow Depth Trends")
 filtered_snow = snow_depth_data[
     (snow_depth_data["Site"] == snow_selected_site) & 
     (snow_depth_data["Water Year"] == snow_selected_year)
 ]
 
 if not filtered_snow.empty:
-    st.write(f"Showing data for site: {snow_selected_site}, year: {snow_selected_year}")
     avg_snow_filtered = filtered_snow.groupby("Month")["Snow Depth (in)"].mean()
     plt.figure(figsize=(10, 6))
     plt.plot(avg_snow_filtered.index, avg_snow_filtered.values, marker='o', label="Average Snow Depth")
-    plt.title(f"Snow Depth Trends for {snow_selected_site} ({snow_selected_year})")
+    plt.title(f"Monthly Snow Depth Trends for {snow_selected_site} in {snow_selected_year}")
     plt.xlabel("Month")
     plt.ylabel("Snow Depth (in)")
     plt.legend()
@@ -61,10 +77,11 @@ if not filtered_snow.empty:
     st.pyplot(plt)
     plt.clf()
 else:
-    st.warning("No data available for the selected site and year.")
+    st.warning(f"No data available for site: {snow_selected_site}, year: {snow_selected_year}")
 
 # Ground Water Data Section
-st.subheader("Ground Water Data")
+st.header("Ground Water Data")
+st.subheader("Static Water Levels")
 filtered_ground = ground_water_data[ground_water_data["System Name"] == st.sidebar.selectbox(
     "Select System Name", sorted(ground_water_data["System Name"].unique()), key="ground_system")]
 
@@ -84,4 +101,5 @@ if not filtered_ground.empty:
     plt.clf()
 else:
     st.warning("No data available for the selected system.")
+
 
