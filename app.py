@@ -42,15 +42,22 @@ if all(col in available_columns for col in ["Good", "Moderate", "Unhealthy_for_S
     # Ensure numeric data for plotting
     category_sums = pd.to_numeric(category_sums, errors="coerce").fillna(0)
 
-    st.write("Category Sums:", category_sums)  # Debugging line
+    # Debugging line to check values
+    st.write("Category Sums Debug:", category_sums)
 
-    if category_sums.sum() > 0:
+    # Remove categories with zero or extremely large values
+    category_sums = category_sums[category_sums > 0]
+
+    if not category_sums.empty:
         plt.figure(figsize=(8, 6))
         plt.bar(category_sums.index, category_sums.values, color='skyblue')
         plt.title("AQI Days by Category")
         plt.xlabel("Category")
         plt.ylabel("Number of Days")
         plt.grid(axis="y")
+        # Add values on bars
+        for i, val in enumerate(category_sums.values):
+            plt.text(i, val + max(category_sums.values) * 0.01, f"{int(val)}", ha='center', va='bottom')
         st.pyplot(plt)
         plt.clf()
     else:
