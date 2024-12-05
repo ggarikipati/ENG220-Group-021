@@ -66,41 +66,45 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Navigation Buttons
 # Rectangle 1: Water Resource Dashboard
-if st.markdown(
+st.markdown(
     """
-    <div class='rectangle' onclick="window.location='pages/appwater.py'">
+    <a href='pages/appwater.py'>
+    <div class='rectangle'>
         <div class='rectangle-title'>🌊 Water Resource Dashboard</div>
         <div class='rectangle-description'>Analyze snow depth, water levels, and related trends.</div>
     </div>
+    </a>
     """,
     unsafe_allow_html=True
-):
-    st.experimental_rerun()
+)
 
 # Rectangle 2: Air Quality Viewer Dashboard
-if st.markdown(
+st.markdown(
     """
-    <div class='rectangle' onclick="window.location='pages/app.py'">
+    <a href='pages/app.py'>
+    <div class='rectangle'>
         <div class='rectangle-title'>🌫️ Air Quality Viewer</div>
         <div class='rectangle-description'>Visualize air quality data across multiple years.</div>
     </div>
+    </a>
     """,
     unsafe_allow_html=True
-):
-    st.experimental_rerun()
+)
 
 # Rectangle 3: Correlation Dashboard
-if st.markdown(
+st.markdown(
     """
-    <div class='rectangle' onclick="window.location='pages/Correlation.py'">
+    <a href='pages/Correlation.py'>
+    <div class='rectangle'>
         <div class='rectangle-title'>🔗 Correlation Dashboard</div>
         <div class='rectangle-description'>Discover relationships between water and air data.</div>
     </div>
+    </a>
     """,
     unsafe_allow_html=True
-):
-    st.experimental_rerun()
+)
 
 # Footer Section
 st.markdown(
