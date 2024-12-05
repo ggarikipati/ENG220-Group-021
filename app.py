@@ -25,13 +25,17 @@ uploaded_files = [
 ]
 
 def load_data(files):
-    dataframes = [pd.read_csv(file) for file in files]
+    dataframes = []
+    for file in files:
+        df = pd.read_csv(file)
+        year = int(file.split("report")[1].split(".csv")[0])
+        df["Year"] = year
+        dataframes.append(df)
     combined_data = pd.concat(dataframes, ignore_index=True)
     return combined_data
 
 # Load and clean data
 data = load_data(uploaded_files)
-data["Year"] = pd.to_datetime(data["Date"], errors="coerce").dt.year
 
 # Streamlit app title
 st.title("Air Quality Viewer Dashboard")
