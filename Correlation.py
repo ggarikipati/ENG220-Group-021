@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Load datasets
 snow_depth_path = "reshaped_snow_depth.csv"
@@ -30,12 +29,18 @@ st.title("Correlation Dashboard")
 st.header("Combined Dataset Overview")
 st.write(correlation_data)
 
-# Correlation Heatmap
+# Correlation Heatmap without seaborn
 st.header("Correlation Heatmap")
 plt.figure(figsize=(10, 6))
 corr_matrix = correlation_data.drop(columns="Water Year").corr()
-sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f")
+plt.imshow(corr_matrix, cmap="coolwarm", aspect="auto")
+plt.colorbar(label="Correlation Coefficient")
+plt.xticks(range(len(corr_matrix.columns)), corr_matrix.columns, rotation=45, ha="right")
+plt.yticks(range(len(corr_matrix.columns)), corr_matrix.columns)
 plt.title("Correlation Between Variables")
+for i in range(len(corr_matrix.columns)):
+    for j in range(len(corr_matrix.columns)):
+        plt.text(j, i, f"{corr_matrix.iloc[i, j]:.2f}", ha="center", va="center", color="black")
 st.pyplot(plt)
 plt.clf()
 
@@ -92,4 +97,6 @@ st.markdown(
     - **Snow Depth and AQI Median**: Negative correlation might indicate better air quality with higher snowpack.
     - **Static Water Level and AQI Median**: Explores the relationship between groundwater and air quality, which may be indirect but relevant for environmental health.
     """
+)
+
 )
