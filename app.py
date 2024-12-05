@@ -58,15 +58,25 @@ if all(col in available_columns for col in ["Good", "Moderate", "Unhealthy_for_S
 pollutant_columns = ["#_Days_CO", "#_Days_NO2", "#_Days_O3", "#_Days_PM2.5", "#_Days_PM10"]
 if all(col in available_columns for col in pollutant_columns):
     st.subheader("Pollutant Days by Year")
+
+    # Ensure numeric data for pollutants
+    for col in pollutant_columns:
+        filtered_data[col] = pd.to_numeric(filtered_data[col], errors="coerce").fillna(0)
+
+    # Group data by year and sum pollutants
     yearly_pollutants = filtered_data.groupby("Year")[pollutant_columns].sum()
-    yearly_pollutants.plot(kind="bar", stacked=True, figsize=(10, 6), color=plt.cm.tab10.colors)
-    plt.title("Pollutant Days by Year")
-    plt.xlabel("Year")
-    plt.ylabel("Number of Days")
-    plt.legend(title="Pollutant")
-    plt.grid(axis="y")
-    st.pyplot(plt)
-    plt.clf()
+
+    if not yearly_pollutants.empty and yearly_pollutants.sum().sum() > 0:
+        yearly_pollutants.plot(kind="bar", stacked=True, figsize=(10, 6), color=plt.cm.tab10.colors)
+        plt.title("Pollutant Days by Year")
+        plt.xlabel("Year")
+        plt.ylabel("Number of Days")
+        plt.legend(title="Pollutant")
+        plt.grid(axis="y")
+        st.pyplot(plt)
+        plt.clf()
+    else:
+        st.warning("No valid data available for Pollutant Days by Year.")
 
 # 3. AQI Statistics
 if all(col in available_columns for col in ["AQI_Maximum", "AQI_90th_Percentile", "AQI_Median"]):
@@ -84,4 +94,3 @@ if all(col in available_columns for col in ["AQI_Maximum", "AQI_90th_Percentile"
 # 4. CBSA Summary Table
 st.subheader("CBSA Summary Table")
 st.write(filtered_data)
-
