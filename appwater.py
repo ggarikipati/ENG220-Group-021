@@ -13,6 +13,58 @@ ground_water_data = pd.read_csv(ground_water_path)
 # Streamlit app title
 st.title("Water Metrics Dashboard")
 
+# Display important data insights directly
+st.header("Key Insights")
+
+# 1. Average Snow Depth Over Months
+st.subheader("Average Snow Depth Over Months")
+snow_depth_avg = snow_depth_data.groupby('Month')['Snow Depth (in)'].mean().reindex([
+    'January', 'February', 'March', 'April', 'May', 'June'
+])
+plt.figure(figsize=(10, 6))
+plt.plot(snow_depth_avg.index, snow_depth_avg.values, marker='o', color='b')
+plt.title("Average Snow Depth Over Months")
+plt.xlabel("Month")
+plt.ylabel("Snow Depth (in)")
+plt.grid(True)
+st.pyplot(plt)
+plt.clf()
+
+# 2. Top 10 Systems By Static Water Level
+st.subheader("Top 10 Systems By Static Water Level")
+top_10_static_levels = ground_water_data.nlargest(10, 'Static Water Level (ft)')
+plt.figure(figsize=(12, 6))
+plt.barh(top_10_static_levels['System Name'], top_10_static_levels['Static Water Level (ft)'], color='skyblue')
+plt.title("Top 10 Systems By Static Water Level")
+plt.xlabel("Static Water Level (ft)")
+plt.ylabel("System Name")
+plt.gca().invert_yaxis()
+plt.grid(True, axis='x', linestyle='--', alpha=0.7)
+st.pyplot(plt)
+plt.clf()
+
+# 3. Depth of Well vs Static Water Level
+st.subheader("Depth of Well vs Static Water Level")
+plt.figure(figsize=(10, 6))
+plt.scatter(
+    ground_water_data['Depth of Well (ft)'], 
+    ground_water_data['Static Water Level (ft)'], 
+    alpha=0.7, 
+    c=ground_water_data['Static Water Level (ft)'], 
+    cmap='viridis', 
+    edgecolor='k'
+)
+plt.title("Depth of Well vs Static Water Level")
+plt.xlabel("Depth of Well (ft)")
+plt.ylabel("Static Water Level (ft)")
+plt.colorbar(label="Static Water Level (ft)")
+plt.grid(True)
+st.pyplot(plt)
+plt.clf()
+
+# Allow user to explore datasets below
+st.header("Explore the Data")
+
 # Tabs for datasets
 tab1, tab2 = st.tabs(["Snow Depth Data", "Ground Water Data"])
 
@@ -36,7 +88,7 @@ with tab1:
         avg_snow = filtered_snow.groupby("Month")["Snow Depth (in)"].mean()
         plt.figure(figsize=(10, 6))
         plt.plot(avg_snow.index, avg_snow.values, marker='o', label="Average Snow Depth")
-        plt.title("Average Snow Depth Over Months")
+        plt.title("Snow Depth Trends")
         plt.xlabel("Month")
         plt.ylabel("Snow Depth (in)")
         plt.legend()
