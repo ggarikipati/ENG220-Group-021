@@ -33,7 +33,22 @@ filtered_data = filtered_data[filtered_data["CBSA"] == selected_cbsa]
 # Display header
 st.title("Air Quality Viewer Dashboard")
 
-# 1. AQI Days by Category
+# 1. Overall Air Quality Trends (1980-2024)
+st.subheader("Overall Air Quality Trends (1980-2024)")
+overall_aqi = data.groupby("Year")["AQI_Median"].mean()
+if not overall_aqi.empty:
+    plt.figure(figsize=(10, 6))
+    overall_aqi.plot(marker='o', color='blue')
+    plt.title("Overall Air Quality Trends")
+    plt.xlabel("Year")
+    plt.ylabel("Average AQI Median")
+    plt.grid(True)
+    st.pyplot(plt)
+    plt.clf()
+else:
+    st.warning("No valid data available for Overall Air Quality Trends.")
+
+# 2. AQI Days by Category
 if all(col in available_columns for col in ["Good", "Moderate", "Unhealthy_for_Sensitive_Groups", "Unhealthy", "Very_Unhealthy", "Hazardous"]):
     st.subheader("AQI Days by Category")
     categories = ["Good", "Moderate", "Unhealthy_for_Sensitive_Groups", "Unhealthy", "Very_Unhealthy", "Hazardous"]
@@ -63,7 +78,7 @@ if all(col in available_columns for col in ["Good", "Moderate", "Unhealthy_for_S
     else:
         st.warning("No valid data available for AQI Days by Category.")
 
-# 2. Pollutant Days by Year
+# 3. Pollutant Days by Year
 pollutant_columns = ["#_Days_CO", "#_Days_NO2", "#_Days_O3", "#_Days_PM2.5", "#_Days_PM10"]
 if all(col in available_columns for col in pollutant_columns):
     st.subheader("Pollutant Days by Year")
@@ -87,7 +102,7 @@ if all(col in available_columns for col in pollutant_columns):
     else:
         st.warning("No valid data available for Pollutant Days by Year.")
 
-# 3. AQI Statistics
+# 4. AQI Statistics
 if all(col in available_columns for col in ["AQI_Maximum", "AQI_90th_Percentile", "AQI_Median"]):
     st.subheader("AQI Statistics")
     aqi_stats = filtered_data.groupby("Year")[["AQI_Maximum", "AQI_90th_Percentile", "AQI_Median"]].mean()
@@ -100,6 +115,6 @@ if all(col in available_columns for col in ["AQI_Maximum", "AQI_90th_Percentile"
     st.pyplot(plt)
     plt.clf()
 
-# 4. CBSA Summary Table
+# 5. CBSA Summary Table
 st.subheader("CBSA Summary Table")
 st.write(filtered_data)
