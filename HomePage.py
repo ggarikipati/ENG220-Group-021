@@ -1,87 +1,113 @@
 import streamlit as st
 
-# Custom Styles
+# Custom Styles for Homepage
 st.markdown(
     """
     <style>
-    .main {
-        background-color: #eef2f3;
-        font-family: 'Arial', sans-serif;
+    .main-container {
+        background-color: #f9fafb;
+        padding: 20px;
+        font-family: Arial, sans-serif;
     }
     .title {
-        color: #1b4965;
+        text-align: center;
         font-size: 3em;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    .overview {
-        color: #333333;
-        font-size: 1.3em;
-        text-align: center;
-        margin: 20px;
-        padding: 10px;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    .dashboard-section {
-        display: flex;
-        justify-content: space-around;
-        margin: 30px;
-    }
-    .dashboard-card {
-        text-align: center;
-        padding: 20px;
-        background-color: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s;
-        width: 250px;
-    }
-    .dashboard-card:hover {
-        transform: scale(1.05);
-    }
-    .dashboard-title {
         color: #1b4965;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+    .subtitle {
+        text-align: center;
         font-size: 1.5em;
+        color: #5a5a5a;
+        margin-bottom: 40px;
+    }
+    .rectangle {
+        background-color: #eef2f3;
+        border-radius: 12px;
+        padding: 30px;
+        margin: 20px auto;
+        text-align: center;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        width: 80%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .rectangle:hover {
+        background-color: #d9e4ea;
+    }
+    .rectangle-title {
+        font-size: 1.8em;
+        color: #1b4965;
+        font-weight: bold;
+    }
+    .rectangle-description {
+        font-size: 1em;
+        color: #5a5a5a;
         margin-top: 10px;
     }
-    .coming-soon {
-        color: #666666;
-        font-style: italic;
-        margin-top: 20px;
+    .footer {
         text-align: center;
+        margin-top: 50px;
+        color: #5a5a5a;
+        font-size: 0.9em;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-st.markdown("<div class='title'>Environmental Data Hub</div>", unsafe_allow_html=True)
+# Main Page Title
+st.markdown("<div class='title'>🌍 Environmental Data Hub</div>", unsafe_allow_html=True)
 
+# Subtitle
 st.markdown(
-    "<div class='overview'>Explore insights into water resources, air quality, and their interconnections over time. Use the sidebar to navigate through the dashboards.</div>",
+    "<div class='subtitle'>Explore insights into water resources, air quality, and their interconnections.</div>",
     unsafe_allow_html=True
 )
 
-# Sidebar navigation
-st.sidebar.title("Dashboard Navigation")
-st.sidebar.info("Select a dashboard to explore different datasets and insights.")
+# Rectangle 1: Water Resource Dashboard
+if st.markdown(
+    """
+    <div class='rectangle' onclick="window.location='pages/appwater.py'">
+        <div class='rectangle-title'>🌊 Water Resource Dashboard</div>
+        <div class='rectangle-description'>Analyze snow depth, water levels, and related trends.</div>
+    </div>
+    """,
+    unsafe_allow_html=True
+):
+    st.experimental_rerun()
 
-dashboard = st.sidebar.radio(
-    "Go to:",
-    ("Home", "Water Resource Dashboard", "Air Quality Viewer", "Correlation Dashboard")
+# Rectangle 2: Air Quality Viewer Dashboard
+if st.markdown(
+    """
+    <div class='rectangle' onclick="window.location='pages/app.py'">
+        <div class='rectangle-title'>🌫️ Air Quality Viewer</div>
+        <div class='rectangle-description'>Visualize air quality data across multiple years.</div>
+    </div>
+    """,
+    unsafe_allow_html=True
+):
+    st.experimental_rerun()
+
+# Rectangle 3: Correlation Dashboard
+if st.markdown(
+    """
+    <div class='rectangle' onclick="window.location='pages/Correlation.py'">
+        <div class='rectangle-title'>🔗 Correlation Dashboard</div>
+        <div class='rectangle-description'>Discover relationships between water and air data.</div>
+    </div>
+    """,
+    unsafe_allow_html=True
+):
+    st.experimental_rerun()
+
+# Footer Section
+st.markdown(
+    """
+    <div class='footer'>
+        Made with ❤️ by [Your Name] | Powered by Streamlit
+    </div>
+    """,
+    unsafe_allow_html=True
 )
-
-if dashboard == "Home":
-    st.markdown("<div class='overview'>Welcome to the Environmental Data Hub! Use the sidebar to navigate to individual dashboards.</div>", unsafe_allow_html=True)
-
-elif dashboard == "Water Resource Dashboard":
-    st.markdown("[Click here to view the Water Resource Dashboard](pages/appwater.py)")
-
-elif dashboard == "Air Quality Viewer":
-    st.markdown("[Click here to view the Air Quality Viewer Dashboard](pages/app.py)")
-
-elif dashboard == "Correlation Dashboard":
-    st.markdown("[Click here to view the Correlation Dashboard](pages/Correlation.py)")
