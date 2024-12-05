@@ -81,7 +81,7 @@ if all(col in available_columns for col in pollutant_columns):
 # 3. AQI Statistics
 if all(col in available_columns for col in ["AQI_Maximum", "AQI_90th_Percentile", "AQI_Median"]):
     st.subheader("AQI Statistics")
-    aqi_stats = filtered_data.groupby("Year")["AQI_Maximum", "AQI_90th_Percentile", "AQI_Median"].mean()
+    aqi_stats = filtered_data.groupby("Year")[["AQI_Maximum", "AQI_90th_Percentile", "AQI_Median"]].mean()
     aqi_stats.plot(figsize=(10, 6), marker='o')
     plt.title("AQI Statistics Over Time")
     plt.xlabel("Year")
