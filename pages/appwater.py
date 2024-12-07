@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Define the relative paths to datasets
+# Correct the relative paths to datasets
 snow_depth_path = "../data/reshaped_snow_depth.csv"
 ground_water_path = "../data/fixed_ground_water_cleaned.csv"
 
@@ -17,16 +17,19 @@ except Exception as e:
     st.error(f"An unexpected error occurred: {e}")
     st.stop()
 
-# Verify required columns in datasets
+# Verify required columns
 required_snow_columns = ["Site", "Water Year", "Snow Depth (in)"]
 required_ground_columns = ["Water Year", "Static Water Level (ft)"]
 
-if not all(col in snow_depth_data.columns for col in required_snow_columns):
-    st.error(f"Missing columns in snow depth dataset: {', '.join(required_snow_columns)}")
+missing_snow_cols = [col for col in required_snow_columns if col not in snow_depth_data.columns]
+missing_ground_cols = [col for col in required_ground_columns if col not in ground_water_data.columns]
+
+if missing_snow_cols:
+    st.error(f"Missing columns in snow depth dataset: {', '.join(missing_snow_cols)}")
     st.stop()
 
-if not all(col in ground_water_data.columns for col in required_ground_columns):
-    st.error(f"Missing columns in ground water dataset: {', '.join(required_ground_columns)}")
+if missing_ground_cols:
+    st.error(f"Missing columns in ground water dataset: {', '.join(missing_ground_cols)}")
     st.stop()
 
 # Streamlit app title
