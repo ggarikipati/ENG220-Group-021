@@ -1,13 +1,5 @@
 import streamlit as st
-
-# Initialize session state for navigation
-if "page" not in st.session_state:
-    st.session_state["page"] = "home"
-
-# Function to switch pages
-def switch_page(page_name):
-    st.session_state["page"] = page_name
-    st.experimental_rerun()
+import streamlit.components.v1 as components
 
 # Custom CSS for styling
 st.markdown(
@@ -71,37 +63,39 @@ st.markdown(
 )
 
 # Homepage layout
-if st.session_state["page"] == "home":
-    st.markdown("<div class='main-title'>🌍 Environmental Data Hub</div>", unsafe_allow_html=True)
-    st.markdown(
-        "<div class='subtitle'>Explore insights into water resources, air quality, and their interconnections.</div>",
-        unsafe_allow_html=True,
-    )
-    
-    # Dashboard buttons
-    if st.button("🌊 Water Resource Dashboard"):
-        switch_page("appwater")
-    if st.button("🌫️ Air Quality Viewer"):
-        switch_page("app")
-    if st.button("🔗 Correlation Dashboard"):
-        switch_page("correlation")
+st.markdown("<div class='main-title'>🌍 Environmental Data Hub</div>", unsafe_allow_html=True)
+st.markdown(
+    "<div class='subtitle'>Explore insights into water resources, air quality, and their interconnections.</div>",
+    unsafe_allow_html=True,
+)
 
-    # Disclaimer about navigation
-    st.markdown(
-        """
-        **Note:** The back buttons on each of the dashboards currently do not work as intended. Please use the sidebar to navigate between different sections of the site. You can return here anytime to choose a different dashboard.
-        """
-    )
+# Dashboard buttons
+st.markdown(
+    """
+    <div class='button-container'>
+        <div class='dashboard-button' onclick="window.location.href='/appwater'">
+            <div class='dashboard-title'>🌊 Water Resource Dashboard</div>
+            <div class='dashboard-description'>Insights into New Mexico's water resources, including snow depth and groundwater trends.</div>
+        </div>
+        <div class='dashboard-button' onclick="window.location.href='/app'">
+            <div class='dashboard-title'>🌫️ Air Quality Viewer</div>
+            <div class='dashboard-description'>Overview of air quality data for New Mexico, including trends in AQI (Air Quality Index).</div>
+        </div>
+        <div class='dashboard-button' onclick="window.location.href='/correlation'">
+            <div class='dashboard-title'>🔗 Correlation Dashboard</div>
+            <div class='dashboard-description'>Displays correlations between various environmental factors, highlighting interdependencies in New Mexico.</div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-    # Description of dashboards
-    st.markdown(
-        """
-        **Dashboard Descriptions:**
-        - **Water Resource Dashboard** (appwater): Provides insights into New Mexico's water resources, including snow depth and groundwater trends.
-        - **Air Quality Viewer** (app): Offers an overview of air quality data for New Mexico, including trends in AQI (Air Quality Index).
-        - **Correlation Dashboard** (correlation): Displays correlations between various environmental factors, such as water resources and air quality, highlighting interdependencies in New Mexico.
-        """
-    )
+# Disclaimer about navigation
+st.markdown(
+    """
+    **Note:** The back buttons on each of the dashboards currently do not work as intended. Please use the sidebar to navigate between different sections of the site. You can return here anytime to choose a different dashboard.
+    """
+)
 
 # Footer
 unique_names = ["Sumo Alexandre", "Ariel Arrellin", "Ryan Garcia", "Timothy Saucier", "Mitchell Snyder", "Christian Talamantes"]
