@@ -1,13 +1,11 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import os
 
 # Load datasets
-base_path = os.path.join(os.path.dirname(__file__), "data")
-snow_depth_path = os.path.join(base_path, "reshaped_snow_depth.csv")
-ground_water_path = os.path.join(base_path, "fixed_ground_water_cleaned.csv")
-aqi_path = os.path.join(base_path, "aqi_combined_1980_2024.csv")
+snow_depth_path = "data/reshaped_snow_depth.csv"
+ground_water_path = "data/fixed_ground_water_cleaned.csv"
+aqi_path = "data/aqi_combined_1980_2024.csv"
 
 # Load data
 try:
