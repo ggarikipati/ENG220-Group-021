@@ -59,6 +59,7 @@ if "AQI_Median" in available_columns:
         plt.grid(True)
         st.pyplot(plt)
         plt.clf()
+        st.markdown("**Interpretation:** This graph displays the overall trend in Air Quality Index (AQI) median from 1980 to 2024. A decreasing trend may indicate an improvement in air quality over the years, while an increasing trend could suggest worsening conditions. This is crucial for assessing long-term air quality management efforts.")
     else:
         st.warning("No valid data available for Overall Air Quality Trends.")
 else:
@@ -82,6 +83,7 @@ if all(col in available_columns for col in categories):
             plt.text(i, val + max(category_sums.values) * 0.01, f"{int(val)}", ha='center', va='bottom')
         st.pyplot(plt)
         plt.clf()
+        st.markdown("**Interpretation:** This bar chart shows the distribution of AQI days across different categories. A higher number of 'Good' days indicates better air quality, whereas a higher count of 'Unhealthy' or 'Hazardous' days indicates poorer air quality. This helps in understanding the air quality distribution for the selected CBSA and year range.")
     else:
         st.warning("No valid data available for AQI Days by Category.")
 else:
@@ -106,6 +108,7 @@ if all(col in available_columns for col in pollutant_columns):
         plt.grid(axis="y")
         st.pyplot(plt)
         plt.clf()
+        st.markdown("**Interpretation:** This stacked bar chart shows the number of days each pollutant was above a certain threshold, by year. It highlights which pollutants are more prevalent over time, helping to identify specific pollutants that contribute significantly to poor air quality in the selected area.")
     else:
         st.warning("No valid data available for Pollutant Days by Year.")
 else:
@@ -123,15 +126,18 @@ if all(col in available_columns for col in ["AQI_Maximum", "AQI_90th_Percentile"
     plt.grid(True)
     st.pyplot(plt)
     plt.clf()
+    st.markdown("**Interpretation:** This line plot shows key AQI statistics over the years, including maximum values, the 90th percentile, and median. This provides insight into the distribution and severity of air quality issues, indicating whether extreme air quality events are becoming more or less frequent over time.")
 else:
     st.warning("Some or all AQI statistic columns are missing in the dataset.")
 
 # 5. CBSA Summary Table
 st.subheader("CBSA Summary Table")
 st.write(filtered_data)
+st.markdown("**Interpretation:** This table provides a detailed summary of the filtered data for the selected CBSA and year range, including all relevant AQI metrics and pollutant information. It allows for in-depth analysis and review of the air quality metrics.")
 
 # Back to Home
 st.markdown(
     "<a href='../HomePage.py' style='font-size: 1.2em;'>⬅️ Back to Home</a>",
     unsafe_allow_html=True
 )
+
