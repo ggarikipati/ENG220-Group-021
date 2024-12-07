@@ -129,6 +129,27 @@ st.pyplot(plt)
 plt.clf()
 st.markdown("**Interpretation:** This bar chart highlights the top sites experiencing the greatest decline in snow depth. These sites may require further investigation to understand the underlying causes, such as changes in climate patterns or land use.")
 
+# 5. Overall Trends Across All Sites and Years
+st.subheader("Overall Trends Across All Sites and Years")
+overall_snow_depth = snow_depth_data.groupby("Water Year")["Snow Depth (in)"].mean().reset_index()
+overall_water_level = ground_water_data.groupby("Water Year")["Static Water Level (ft)"].mean().reset_index()
+combined_overall = overall_snow_depth.merge(overall_water_level, on="Water Year", how="inner")
+
+if not combined_overall.empty:
+    plt.figure(figsize=(10, 6))
+    plt.plot(combined_overall["Water Year"], combined_overall["Snow Depth (in)"], marker='o', color='blue', label='Average Snow Depth (in)')
+    plt.plot(combined_overall["Water Year"], combined_overall["Static Water Level (ft)"], marker='o', color='green', label='Average Static Water Level (ft)')
+    plt.title("Overall Trends Across All Sites and Years")
+    plt.xlabel("Year")
+    plt.ylabel("Values")
+    plt.legend()
+    plt.grid(True)
+    st.pyplot(plt)
+    plt.clf()
+    st.markdown("**Interpretation:** This graph provides an overall view of both snow depth and groundwater levels across all sites and years. It helps in understanding the long-term trends and potential relationships between snowpack and groundwater resources. Consistent declines in both metrics could indicate broader environmental issues, while divergent trends may suggest localized factors affecting either snow or groundwater levels.")
+else:
+    st.warning("No valid data available for overall trends.")
+
 # Back to Home
 st.markdown(
     "<a href='../HomePage.py' style='font-size: 1.2em;'>⬅️ Back to Home</a>",
