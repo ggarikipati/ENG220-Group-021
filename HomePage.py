@@ -87,3 +87,35 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown(
+    """
+    <div class='dashboard-button' onclick="window.location.href='/correlation'">
+        <div class='dashboard-title'>🔗 Correlation Dashboard</div>
+        <div class='dashboard-description'>Displays correlations between various environmental factors, highlighting interdependencies in New Mexico.</div>
+    </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# Disclaimer about navigation
+st.markdown(
+    """
+    **Note:** The back buttons on each of the dashboards currently do not work as intended. Please use the sidebar to navigate between different sections of the site. 
+    The sidebar can be accessed by clicking the arrow at the top-left of the screen. You can return here anytime to choose a different dashboard.
+    """
+)
+
+# Footer
+unique_names = ["Sumo Alexandre", "Ariel Arrellin", "Ryan Garcia", "Timothy Saucier", "Mitchell Snyder", "Christian Talamantes"]
+footer_text = "Made with ❤️ by " + " | ".join(unique_names) + " | Powered by Streamlit"
+
+st.markdown(
+    f"""
+    <div class='footer'>
+        {footer_text}
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
