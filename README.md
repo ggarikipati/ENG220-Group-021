@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project focuses on building interactive dashboards to analyze and visualize environmental data for **New Mexico**. Our work is divided into two main dashboards and an additional correlation analysis, providing insights into air quality, water resources, and their interconnections.
+This project focuses on building interactive dashboards to analyze and visualize environmental data for **New Mexico**. Our work is divided into three main dashboards, providing insights into air quality, water resources, and their interconnections.
 
 ## Dashboards
 
@@ -33,7 +33,12 @@ This project focuses on building interactive dashboards to analyze and visualize
 
 ## Project Details
 
-This project was developed using **Streamlit** and **Python**. Although group members had no prior Python experience, code was adapted and edited with assistance from ChatGPT. 
+This project was developed using **Streamlit** and **Python**. Although group members had no prior Python experience, the code was adapted and edited with assistance from ChatGPT. The dashboards provide interactive and visual insights to help users understand the environmental data better.
+
+### Updates
+- **Navigation:** The homepage now includes clear instructions for navigating using the sidebar (accessible via the arrow in the top-left corner).
+- **Dashboard Descriptions:** Each dashboard has been clearly described and linked for easy access.
+- **Consistent Styling:** The homepage and dashboard buttons have been styled uniformly to enhance user experience.
 
 ### Team Members
 - **Sumo Alexandre**
@@ -52,18 +57,22 @@ This project was developed using **Streamlit** and **Python**. Although group me
      pip install streamlit pandas matplotlib
      ```
 
-2. **Run the Air Quality Dashboard:**
-   ```bash
-   streamlit run app.py
-   ```
+2. **Run the Dashboards:**
+   - Air Quality Dashboard:
+     ```bash
+     streamlit run app.py
+     ```
+   - Water Resource Dashboard:
+     ```bash
+     streamlit run appwater.py
+     ```
+   - Correlation Dashboard:
+     ```bash
+     streamlit run correlation.py
+     ```
 
-3. **Run the Water Resource Dashboard:**
-   ```bash
-   streamlit run appwater.py
-   ```
-
-4. **Place Datasets:**
-   - Ensure the following files are in the same directory as the app scripts:
+3. **Place Datasets:**
+   - Ensure the following files are in the `data` directory:
      - `aqi_combined_1980_2024.csv`
      - `reshaped_snow_depth.csv`
      - `fixed_ground_water_cleaned.csv`
@@ -75,4 +84,5 @@ This project was developed using **Streamlit** and **Python**. Although group me
 
 ## Acknowledgments
 
-Special thanks to ChatGPT for aiding in Python coding and streamlining the development process.
+Special thanks to ChatGPT for aiding in Python coding and streamlining the development process. The dashboards represent a collaborative effort to make environmental data accessible and insightful for a wide audience.
+
