@@ -61,6 +61,7 @@ if not filtered_snow_data.empty:
     plt.grid(True)
     st.pyplot(plt)
     plt.clf()
+    st.markdown("**Interpretation:** This graph shows the average snow depth over the years for the selected site. A declining trend could indicate reduced snowfall, potentially due to climate change, while an increasing trend suggests more favorable snow conditions.")
 else:
     st.warning("No data available for the selected site and year range.")
 
@@ -78,6 +79,7 @@ if "Water Year" in ground_columns:
         plt.grid(True)
         st.pyplot(plt)
         plt.clf()
+        st.markdown("**Interpretation:** This graph shows the average static water level over the years. A declining trend could suggest depletion of groundwater resources, possibly due to over-extraction or insufficient recharge.")
     else:
         st.warning("No valid data available for Static Water Level Trends.")
 else:
@@ -106,6 +108,7 @@ if "Water Year" in ground_columns:
         plt.grid(True)
         st.pyplot(plt)
         plt.clf()
+        st.markdown("**Interpretation:** This scatter plot shows the correlation between snow depth and static water level. A positive correlation may indicate that higher snow depth contributes to better groundwater recharge, while a lack of correlation could suggest other factors affecting groundwater levels.")
     else:
         st.warning("No valid data available for correlation analysis.")
 else:
@@ -124,6 +127,7 @@ plt.ylabel("Site")
 plt.grid(True, axis="x")
 st.pyplot(plt)
 plt.clf()
+st.markdown("**Interpretation:** This bar chart highlights the top sites experiencing the greatest decline in snow depth. These sites may require further investigation to understand the underlying causes, such as changes in climate patterns or land use.")
 
 # Back to Home
 st.markdown(
