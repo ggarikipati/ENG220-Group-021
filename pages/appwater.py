@@ -2,27 +2,31 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Load datasets
-snow_depth_path = "reshaped_snow_depth.csv"  # Ensure this file is in the correct directory
-ground_water_path = "fixed_ground_water_cleaned.csv"  # Ensure this file is in the correct directory
+# Define the relative paths to datasets
+snow_depth_path = "../data/reshaped_snow_depth.csv"
+ground_water_path = "../data/fixed_ground_water_cleaned.csv"
 
+# Attempt to load datasets
 try:
     snow_depth_data = pd.read_csv(snow_depth_path)
     ground_water_data = pd.read_csv(ground_water_path)
 except FileNotFoundError as e:
-    st.error(f"Error: {e}")
+    st.error(f"File not found: {e}")
+    st.stop()
+except Exception as e:
+    st.error(f"An unexpected error occurred: {e}")
     st.stop()
 
-# Check if essential columns exist
+# Verify required columns in datasets
 required_snow_columns = ["Site", "Water Year", "Snow Depth (in)"]
 required_ground_columns = ["Water Year", "Static Water Level (ft)"]
 
 if not all(col in snow_depth_data.columns for col in required_snow_columns):
-    st.error("Error: Missing required columns in snow depth dataset.")
+    st.error(f"Missing columns in snow depth dataset: {', '.join(required_snow_columns)}")
     st.stop()
 
 if not all(col in ground_water_data.columns for col in required_ground_columns):
-    st.error("Error: Missing required columns in ground water dataset.")
+    st.error(f"Missing columns in ground water dataset: {', '.join(required_ground_columns)}")
     st.stop()
 
 # Streamlit app title
