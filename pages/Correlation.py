@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Load datasets
 snow_depth_path = "data/reshaped_snow_depth.csv"
