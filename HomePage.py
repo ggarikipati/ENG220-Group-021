@@ -1,9 +1,5 @@
 import streamlit as st
 
-# Initialize session state for navigation
-if "page" not in st.session_state:
-    st.session_state["page"] = "home"
-
 # Custom CSS for styling
 st.markdown(
     """
@@ -72,28 +68,22 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Dashboard buttons with Streamlit navigation
-st.markdown("<div class='button-container'>", unsafe_allow_html=True)
-
-if st.button("🌊 Water Resource Dashboard"):
-    switch_page("appwater")
-
+# Dashboard buttons with consistent styling
 st.markdown(
     """
-    <div class='dashboard-button' onclick="window.location.href='/app'">
-        <div class='dashboard-title'>🌫️ Air Quality Viewer</div>
-        <div class='dashboard-description'>Overview of air quality data for New Mexico, including trends in AQI (Air Quality Index).</div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    """
-    <div class='dashboard-button' onclick="window.location.href='/correlation'">
-        <div class='dashboard-title'>🔗 Correlation Dashboard</div>
-        <div class='dashboard-description'>Displays correlations between various environmental factors, highlighting interdependencies in New Mexico.</div>
-    </div>
+    <div class='button-container'>
+        <div class='dashboard-button' onclick="window.location.href='/appwater'">
+            <div class='dashboard-title'>🌊 Water Resource Dashboard</div>
+            <div class='dashboard-description'>Insights into New Mexico's water resources, including snow depth and groundwater trends.</div>
+        </div>
+        <div class='dashboard-button' onclick="window.location.href='/app'">
+            <div class='dashboard-title'>🌫️ Air Quality Viewer</div>
+            <div class='dashboard-description'>Overview of air quality data for New Mexico, including trends in AQI (Air Quality Index).</div>
+        </div>
+        <div class='dashboard-button' onclick="window.location.href='/correlation'">
+            <div class='dashboard-title'>🔗 Correlation Dashboard</div>
+            <div class='dashboard-description'>Displays correlations between various environmental factors, highlighting interdependencies in New Mexico.</div>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
