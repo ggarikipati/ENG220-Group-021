@@ -1,87 +1,66 @@
 import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
 
-# Custom Styles for Homepage
-st.markdown(
-    """
-    <style>
-    .main-container {
-        background-color: #f9fafb;
-        padding: 20px;
-        font-family: Arial, sans-serif;
-    }
-    .title {
-        text-align: center;
-        font-size: 3em;
-        color: #1b4965;
-        margin-bottom: 20px;
-        font-weight: bold;
-    }
-    .subtitle {
-        text-align: center;
-        font-size: 1.5em;
-        color: #5a5a5a;
-        margin-bottom: 40px;
-    }
-    .rectangle {
-        background-color: #eef2f3;
-        border-radius: 12px;
-        padding: 30px;
-        margin: 20px auto;
-        text-align: center;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        width: 80%;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-    .rectangle:hover {
-        background-color: #d9e4ea;
-    }
-    .rectangle-title {
-        font-size: 1.8em;
-        color: #1b4965;
-        font-weight: bold;
-    }
-    .rectangle-description {
-        font-size: 1em;
-        color: #5a5a5a;
-        margin-top: 10px;
-    }
-    .footer {
-        text-align: center;
-        margin-top: 50px;
-        color: #5a5a5a;
-        font-size: 0.9em;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
+# Load datasets
+snow_depth_path = "reshaped_snow_depth.csv"  # Ensure this file is in the same directory
+ground_water_path = "fixed_ground_water_cleaned.csv"  # Ensure this file is in the same directory
+
+# Load data
+snow_depth_data = pd.read_csv(snow_depth_path)
+ground_water_data = pd.read_csv(ground_water_path)
+
+# Streamlit app title
+st.title("Water Resource Dashboard")
+
+# Add a back-to-home button
+if st.button("⬅️ Back to Home"):
+    st.session_state["page"] = "home"
+    st.experimental_rerun()
+
+# Sidebar for interactivity
+st.sidebar.header("Dashboard Options")
+st.sidebar.info("Customize the charts displayed on the dashboard. Select specific sites, thresholds, or top regions.")
+
+# Filters for charts
+selected_site = st.sidebar.selectbox(
+    "Select Site for Snow Depth Analysis",
+    sorted(snow_depth_data["Site"].unique()),
+    key="site"
 )
+threshold = st.sidebar.slider("Dry Year Snow Depth Threshold (in)", 0, 20, 10, key="threshold")
+top_n_sites = st.sidebar.slider("Number of Top Sites", 5, 20, 10, key="top_sites")
 
-# Main Page Title
-st.markdown("<div class='title'>🌍 Environmental Data Hub</div>", unsafe_allow_html=True)
+# Display all charts in sequence
+st.header("All Charts")
 
-# Subtitle
-st.markdown(
-    "<div class='subtitle'>Explore insights into water resources, air quality, and their interconnections.</div>",
-    unsafe_allow_html=True
-)
+# 1. Yearly Snow Depth Trends
+st.subheader("Yearly Snow Depth Trends")
+site_data = snow_depth_data[snow_depth_data["Site"] == selected_site]
+if not site_data.empty:
+    avg_snow_per_year = site_data.groupby("Water Year")["Snow Depth (in)"].mean().reset_index()
+    plt.figure(figsize=(10, 6))
+    plt.plot(avg_snow_per_year["Water Year"], avg_snow_per_year["Snow Depth (in)"], marker='o')
+    plt.title(f"Yearly Snow Depth Trends at {selected_site}")
+    plt.xlabel("Year")
+    plt.ylabel("Average Snow Depth (in)")
+    plt.grid(True)
+    st.pyplot(plt)
+    plt.clf()
+else:
+    st.warning("No data available for the selected site.")
 
-# Navigation Buttons
-if st.button("🌊 Water Resource Dashboard"):
-    st.experimental_set_query_params(page="appwater")
-if st.button("🌫️ Air Quality Viewer"):
-    st.experimental_set_query_params(page="app")
-if st.button("🔗 Correlation Dashboard"):
-    st.experimental_set_query_params(page="Correlation")
-
-# Footer Section
-st.markdown(
-    """
-    <div class='footer'>
-        Made with ❤️ by [Your Name] | Powered by Streamlit
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
+# 2. Static Water Level Trends
+st.subheader("Static Water Level Trends")
+if "Water Year" in ground_water_data.columns:
+    avg_water_level = ground_water_data.groupby("Water Year")["Static Water Level (ft)"].mean().reset_index()
+    plt.figure(figsize=(10, 6))
+    plt.plot(avg_water_level["Water Year"], avg_water_level["Static Water Level (ft)"], marker='o')
+    plt.title("Static Water Level Trends")
+    plt.xlabel("Year")
+    plt.ylabel("Average Static Water Level (ft)")
+    plt.grid(True)
+    st.pyplot(plt)
+    plt.clf()
+else:
+    st.warning("Water Year data is not available.")
