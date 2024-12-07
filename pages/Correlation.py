@@ -28,6 +28,7 @@ st.title("Correlation Dashboard")
 # Display merged data
 st.header("Combined Dataset Overview")
 st.write(correlation_data)
+st.markdown("**Interpretation:** This table shows the combined dataset with average snow depth, static water level, and AQI median over the years. It provides a comprehensive view of how these environmental factors interact over time.")
 
 # Correlation Heatmap without seaborn
 st.header("Correlation Heatmap")
@@ -43,6 +44,7 @@ for i in range(len(corr_matrix.columns)):
         plt.text(j, i, f"{corr_matrix.iloc[i, j]:.2f}", ha="center", va="center", color="black")
 st.pyplot(plt)
 plt.clf()
+st.markdown("**Interpretation:** This heatmap shows the correlation between average snow depth, static water level, and AQI median. A positive correlation indicates that as one variable increases, the other tends to increase, whereas a negative correlation suggests an inverse relationship. This helps in identifying how these environmental factors are interconnected.")
 
 # Snow Depth vs Static Water Level
 st.header("Snow Depth vs Static Water Level")
@@ -58,6 +60,7 @@ plt.ylabel("Average Static Water Level (ft)")
 plt.grid(True)
 st.pyplot(plt)
 plt.clf()
+st.markdown("**Interpretation:** This scatter plot shows the relationship between average snow depth and average static water level. A positive trend would suggest that higher snowpack contributes to greater groundwater recharge, which is crucial for understanding water resource availability.")
 
 # Snow Depth vs AQI Median
 st.header("Snow Depth vs AQI Median")
@@ -73,6 +76,7 @@ plt.ylabel("Average AQI Median")
 plt.grid(True)
 st.pyplot(plt)
 plt.clf()
+st.markdown("**Interpretation:** This scatter plot explores the relationship between average snow depth and average AQI median. A negative correlation could indicate that areas with higher snowpack tend to have better air quality, potentially due to the role of snow in trapping pollutants and reducing dust in the atmosphere.")
 
 # Static Water Level vs AQI Median
 st.header("Static Water Level vs AQI Median")
@@ -88,15 +92,14 @@ plt.ylabel("Average AQI Median")
 plt.grid(True)
 st.pyplot(plt)
 plt.clf()
+st.markdown("**Interpretation:** This scatter plot shows the relationship between average static water level and average AQI median. The relationship may not be direct, but it provides insight into how groundwater levels might influence or be influenced by air quality, possibly through factors like vegetation growth and dust suppression.")
 
 # Insights Section
 st.header("Insights")
 st.markdown(
     """
-    - **Snow Depth and Static Water Level**: Positive correlation suggests that snowpack contributes to groundwater recharge.
-    - **Snow Depth and AQI Median**: Negative correlation might indicate better air quality with higher snowpack.
-    - **Static Water Level and AQI Median**: Explores the relationship between groundwater and air quality, which may be indirect but relevant for environmental health.
+    - **Snow Depth and Static Water Level**: A positive correlation suggests that snowpack plays an important role in groundwater recharge.
+    - **Snow Depth and AQI Median**: A negative correlation may indicate that higher snowpack contributes to better air quality, likely due to reduced airborne particulates.
+    - **Static Water Level and AQI Median**: The relationship between groundwater levels and air quality may be indirect, but could be related to vegetation health, dust suppression, and overall environmental stability.
     """
 )
-
-
