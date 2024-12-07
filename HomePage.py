@@ -86,14 +86,32 @@ if st.session_state["page"] == "home":
     if st.button("🔗 Correlation Dashboard"):
         switch_page("correlation")
 
+    # Disclaimer about navigation
+    st.markdown(
+        """
+        **Note:** The back buttons on each of the dashboards currently do not work as intended. Please use the sidebar to navigate between different sections of the site. You can return here anytime to choose a different dashboard.
+        """
+    )
+
+    # Description of dashboards
+    st.markdown(
+        """
+        **Dashboard Descriptions:**
+        - **Water Resource Dashboard** (appwater): Provides insights into New Mexico's water resources, including snow depth and groundwater trends.
+        - **Air Quality Viewer** (app): Offers an overview of air quality data for New Mexico, including trends in AQI (Air Quality Index).
+        - **Correlation Dashboard** (correlation): Displays correlations between various environmental factors, such as water resources and air quality, highlighting interdependencies in New Mexico.
+        """
+    )
+
 # Footer
+unique_names = ["Sumo Alexandre", "Ariel Arrellin", "Ryan Garcia", "Timothy Saucier", "Mitchell Snyder", "Christian Talamantes"]
+footer_text = "Made with ❤️ by " + " | ".join(unique_names) + " | Powered by Streamlit"
+
 st.markdown(
-    """
+    f"""
     <div class='footer'>
-        Made with ❤️ by Ariel Arrellin | Powered by Streamlit
+        {footer_text}
     </div>
     """,
     unsafe_allow_html=True,
 )
-
-
