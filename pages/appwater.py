@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # File paths for the datasets
 snow_depth_path = "data/reshaped_snow_depth.csv"
@@ -54,14 +55,17 @@ st.subheader("Yearly Snow Depth Trends")
 if not filtered_snow_data.empty:
     yearly_trends = filtered_snow_data.groupby("Water Year")["Snow Depth (in)"].mean()
     plt.figure(figsize=(10, 6))
-    yearly_trends.plot(marker='o', color='blue')
+    plt.scatter(yearly_trends.index, yearly_trends, color='blue', alpha=0.7, edgecolor='k')
+    # Add trend line
+    m, b = np.polyfit(yearly_trends.index, yearly_trends, 1)
+    plt.plot(yearly_trends.index, m * yearly_trends.index + b, color='red')
     plt.title(f"Yearly Snow Depth Trends for {selected_site}")
     plt.xlabel("Year")
     plt.ylabel("Average Snow Depth (in)")
     plt.grid(True)
     st.pyplot(plt)
     plt.clf()
-    st.markdown("**Interpretation:** This graph shows the average snow depth over the years for the selected site. A declining trend could indicate reduced snowfall, potentially due to climate change, while an increasing trend suggests more favorable snow conditions.")
+    st.markdown("**Interpretation:** This graph shows the average snow depth over the years for the selected site, along with a trend line. A declining trend could indicate reduced snowfall, potentially due to climate change, while an increasing trend suggests more favorable snow conditions.")
 else:
     st.warning("No data available for the selected site and year range.")
 
@@ -72,14 +76,17 @@ if "Water Year" in ground_columns:
     avg_water_level = filtered_ground_data.groupby("Water Year")["Static Water Level (ft)"].mean()
     if not avg_water_level.empty:
         plt.figure(figsize=(10, 6))
-        avg_water_level.plot(marker='o', color='green')
+        plt.scatter(avg_water_level.index, avg_water_level, color='green', alpha=0.7, edgecolor='k')
+        # Add trend line
+        m, b = np.polyfit(avg_water_level.index, avg_water_level, 1)
+        plt.plot(avg_water_level.index, m * avg_water_level.index + b, color='red')
         plt.title("Static Water Level Trends")
         plt.xlabel("Year")
         plt.ylabel("Average Static Water Level (ft)")
         plt.grid(True)
         st.pyplot(plt)
         plt.clf()
-        st.markdown("**Interpretation:** This graph shows the average static water level over the years. A declining trend could suggest depletion of groundwater resources, possibly due to over-extraction or insufficient recharge.")
+        st.markdown("**Interpretation:** This graph shows the average static water level over the years, along with a trend line. A declining trend could suggest depletion of groundwater resources, possibly due to over-extraction or insufficient recharge.")
     else:
         st.warning("No valid data available for Static Water Level Trends.")
 else:
@@ -102,13 +109,16 @@ if "Water Year" in ground_columns:
             combined_data["Static Water Level (ft)"], 
             alpha=0.7, edgecolor='k'
         )
+        # Add trend line
+        m, b = np.polyfit(combined_data["Snow Depth (in)"], combined_data["Static Water Level (ft)"], 1)
+        plt.plot(combined_data["Snow Depth (in)"], m * combined_data["Snow Depth (in)"] + b, color='red')
         plt.title("Correlation Between Snow Depth and Static Water Level")
         plt.xlabel("Average Snow Depth (in)")
         plt.ylabel("Average Static Water Level (ft)")
         plt.grid(True)
         st.pyplot(plt)
         plt.clf()
-        st.markdown("**Interpretation:** This scatter plot shows the correlation between snow depth and static water level. A positive correlation may indicate that higher snow depth contributes to better groundwater recharge, while a lack of correlation could suggest other factors affecting groundwater levels.")
+        st.markdown("**Interpretation:** This scatter plot shows the correlation between snow depth and static water level, along with a trend line. A positive correlation may indicate that higher snow depth contributes to better groundwater recharge, while a lack of correlation could suggest other factors affecting groundwater levels.")
     else:
         st.warning("No valid data available for correlation analysis.")
 else:
@@ -139,6 +149,11 @@ if not combined_overall.empty:
     plt.figure(figsize=(10, 6))
     plt.plot(combined_overall["Water Year"], combined_overall["Snow Depth (in)"], marker='o', color='blue', label='Average Snow Depth (in)')
     plt.plot(combined_overall["Water Year"], combined_overall["Static Water Level (ft)"], marker='o', color='green', label='Average Static Water Level (ft)')
+    # Add trend lines
+    m_snow, b_snow = np.polyfit(combined_overall["Water Year"], combined_overall["Snow Depth (in)"], 1)
+    plt.plot(combined_overall["Water Year"], m_snow * combined_overall["Water Year"] + b_snow, color='blue', linestyle='--')
+    m_water, b_water = np.polyfit(combined_overall["Water Year"], combined_overall["Static Water Level (ft)"], 1)
+    plt.plot(combined_overall["Water Year"], m_water * combined_overall["Water Year"] + b_water, color='green', linestyle='--')
     plt.title("Overall Trends Across All Sites and Years")
     plt.xlabel("Year")
     plt.ylabel("Values")
@@ -146,7 +161,7 @@ if not combined_overall.empty:
     plt.grid(True)
     st.pyplot(plt)
     plt.clf()
-    st.markdown("**Interpretation:** This graph provides an overall view of both snow depth and groundwater levels across all sites and years. It helps in understanding the long-term trends and potential relationships between snowpack and groundwater resources. Consistent declines in both metrics could indicate broader environmental issues, while divergent trends may suggest localized factors affecting either snow or groundwater levels.")
+    st.markdown("**Interpretation:** This graph provides an overall view of both snow depth and groundwater levels across all sites and years, along with trend lines. The trend lines help to visualize long-term changes. Consistent declines in both metrics could indicate broader environmental issues, while divergent trends may suggest localized factors affecting either snow or groundwater levels.")
 else:
     st.warning("No valid data available for overall trends.")
 
