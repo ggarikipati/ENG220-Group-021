@@ -2,95 +2,120 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Correct the relative paths to datasets
-snow_depth_path = "../data/reshaped_snow_depth.csv"
-ground_water_path = "../data/fixed_ground_water_cleaned.csv"
+# File paths for the datasets
+snow_depth_path = "data/reshaped_snow_depth.csv"
+ground_water_path = "data/fixed_ground_water_cleaned.csv"
 
-# Attempt to load datasets
+# Load the datasets
 try:
     snow_depth_data = pd.read_csv(snow_depth_path)
     ground_water_data = pd.read_csv(ground_water_path)
-except FileNotFoundError as e:
-    st.error(f"File not found: {e}")
-    st.stop()
-except Exception as e:
-    st.error(f"An unexpected error occurred: {e}")
+except FileNotFoundError:
+    st.error("Dataset not found. Please ensure the files are in the correct paths: 'data/reshaped_snow_depth.csv' and 'data/fixed_ground_water_cleaned.csv'")
     st.stop()
 
-# Verify required columns
-required_snow_columns = ["Site", "Water Year", "Snow Depth (in)"]
-required_ground_columns = ["Water Year", "Static Water Level (ft)"]
+# Ensure required columns exist
+snow_columns = snow_depth_data.columns
+ground_columns = ground_water_data.columns
 
-missing_snow_cols = [col for col in required_snow_columns if col not in snow_depth_data.columns]
-missing_ground_cols = [col for col in required_ground_columns if col not in ground_water_data.columns]
-
-if missing_snow_cols:
-    st.error(f"Missing columns in snow depth dataset: {', '.join(missing_snow_cols)}")
-    st.stop()
-
-if missing_ground_cols:
-    st.error(f"Missing columns in ground water dataset: {', '.join(missing_ground_cols)}")
-    st.stop()
-
-# Streamlit app title
-st.title("Water Resource Dashboard")
-
-# Add a back-to-home button
-if st.button("⬅️ Back to Home"):
-    st.session_state["page"] = "home"
-    st.experimental_rerun()
-
-# Sidebar for interactivity
+# Sidebar options
 st.sidebar.header("Dashboard Options")
-st.sidebar.info("Customize the charts displayed on the dashboard. Select specific sites, thresholds, or top regions.")
 
-# Filters for charts
-selected_site = st.sidebar.selectbox(
-    "Select Site for Snow Depth Analysis",
-    sorted(snow_depth_data["Site"].unique())
-)
-threshold = st.sidebar.slider("Dry Year Snow Depth Threshold (in)", 0, 20, 10)
-top_n_sites = st.sidebar.slider("Number of Top Sites", 5, 20, 10)
+# Year range selection for snow depth data
+if "Water Year" in snow_columns:
+    years = sorted(snow_depth_data["Water Year"].unique())
+    selected_years = st.sidebar.slider(
+        "Select Year Range",
+        int(min(years)),
+        int(max(years)),
+        (int(min(years)), int(max(years)))
+    )
+else:
+    st.error("The 'Water Year' column is missing in the snow depth dataset.")
+    st.stop()
 
-# Display all charts in sequence
-st.header("All Charts")
+# Site selection for snow depth analysis
+if "Site" in snow_columns:
+    selected_site = st.sidebar.selectbox("Select Site", snow_depth_data["Site"].unique())
+else:
+    st.warning("The 'Site' column is missing in the dataset.")
+    selected_site = None
+
+# Filter snow depth data based on selections
+filtered_snow_data = snow_depth_data[(snow_depth_data["Water Year"] >= selected_years[0]) & (snow_depth_data["Water Year"] <= selected_years[1])]
+if selected_site:
+    filtered_snow_data = filtered_snow_data[filtered_snow_data["Site"] == selected_site]
+
+# Display header
+st.title("🌊 Water Resource Dashboard")
 
 # 1. Yearly Snow Depth Trends
 st.subheader("Yearly Snow Depth Trends")
-site_data = snow_depth_data[snow_depth_data["Site"] == selected_site]
-if not site_data.empty:
-    avg_snow_per_year = site_data.groupby("Water Year")["Snow Depth (in)"].mean().reset_index()
+if not filtered_snow_data.empty:
+    yearly_trends = filtered_snow_data.groupby("Water Year")["Snow Depth (in)"].mean()
     plt.figure(figsize=(10, 6))
-    plt.plot(avg_snow_per_year["Water Year"], avg_snow_per_year["Snow Depth (in)"], marker='o')
-    plt.title(f"Yearly Snow Depth Trends at {selected_site}")
+    yearly_trends.plot(marker='o', color='blue')
+    plt.title(f"Yearly Snow Depth Trends for {selected_site}")
     plt.xlabel("Year")
     plt.ylabel("Average Snow Depth (in)")
     plt.grid(True)
     st.pyplot(plt)
     plt.clf()
 else:
-    st.warning("No data available for the selected site.")
+    st.warning("No data available for the selected site and year range.")
 
 # 2. Static Water Level Trends
 st.subheader("Static Water Level Trends")
-if "Water Year" in ground_water_data.columns:
-    avg_water_level = ground_water_data.groupby("Water Year")["Static Water Level (ft)"].mean().reset_index()
-    plt.figure(figsize=(10, 6))
-    plt.plot(avg_water_level["Water Year"], avg_water_level["Static Water Level (ft)"], marker='o')
-    plt.title("Static Water Level Trends")
-    plt.xlabel("Year")
-    plt.ylabel("Average Static Water Level (ft)")
-    plt.grid(True)
-    st.pyplot(plt)
-    plt.clf()
+if "Water Year" in ground_columns:
+    filtered_ground_data = ground_water_data[(ground_water_data["Water Year"] >= selected_years[0]) & (ground_water_data["Water Year"] <= selected_years[1])]
+    avg_water_level = filtered_ground_data.groupby("Water Year")["Static Water Level (ft)"].mean()
+    if not avg_water_level.empty:
+        plt.figure(figsize=(10, 6))
+        avg_water_level.plot(marker='o', color='green')
+        plt.title("Static Water Level Trends")
+        plt.xlabel("Year")
+        plt.ylabel("Average Static Water Level (ft)")
+        plt.grid(True)
+        st.pyplot(plt)
+        plt.clf()
+    else:
+        st.warning("No valid data available for Static Water Level Trends.")
 else:
-    st.warning("Water Year data is not available.")
+    st.error("The 'Water Year' column is missing in the ground water dataset.")
+    st.stop()
 
-# 3. Top Sites with Greatest Resource Decline
+# 3. Snow Depth vs Static Water Level Correlation
+st.subheader("Snow Depth vs Static Water Level Correlation")
+combined_data = filtered_snow_data.groupby("Water Year")["Snow Depth (in)"].mean().reset_index()
+if "Water Year" in ground_columns:
+    combined_data = combined_data.merge(
+        filtered_ground_data.groupby("Water Year")["Static Water Level (ft)"].mean().reset_index(),
+        on="Water Year",
+        how="inner"
+    )
+    if not combined_data.empty:
+        plt.figure(figsize=(10, 6))
+        plt.scatter(
+            combined_data["Snow Depth (in)"], 
+            combined_data["Static Water Level (ft)"], 
+            alpha=0.7, edgecolor='k'
+        )
+        plt.title("Correlation Between Snow Depth and Static Water Level")
+        plt.xlabel("Average Snow Depth (in)")
+        plt.ylabel("Average Static Water Level (ft)")
+        plt.grid(True)
+        st.pyplot(plt)
+        plt.clf()
+    else:
+        st.warning("No valid data available for correlation analysis.")
+else:
+    st.warning("Data for correlation is not available.")
+
+# 4. Top Sites with Greatest Resource Decline
 st.subheader("Top Sites with Greatest Resource Decline")
 snow_decline = snow_depth_data.groupby("Site")["Snow Depth (in)"].agg(["first", "last"])
 snow_decline["Decline"] = snow_decline["first"] - snow_decline["last"]
-top_decline_sites = snow_decline.nlargest(top_n_sites, "Decline")["Decline"].reset_index()
+top_decline_sites = snow_decline.nlargest(10, "Decline")["Decline"].reset_index()
 plt.figure(figsize=(10, 6))
 plt.barh(top_decline_sites["Site"], top_decline_sites["Decline"], color="skyblue")
 plt.title("Top Sites with Greatest Snow Depth Decline")
@@ -99,3 +124,9 @@ plt.ylabel("Site")
 plt.grid(True, axis="x")
 st.pyplot(plt)
 plt.clf()
+
+# Back to Home
+st.markdown(
+    "<a href='../HomePage.py' style='font-size: 1.2em;'>⬅️ Back to Home</a>",
+    unsafe_allow_html=True
+)
