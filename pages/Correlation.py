@@ -1,16 +1,22 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 # Load datasets
-snow_depth_path = "reshaped_snow_depth.csv"
-ground_water_path = "fixed_ground_water_cleaned.csv"
-aqi_path = "aqi_combined_1980_2024.csv"
+base_path = os.path.join(os.path.dirname(__file__), "data")
+snow_depth_path = os.path.join(base_path, "reshaped_snow_depth.csv")
+ground_water_path = os.path.join(base_path, "fixed_ground_water_cleaned.csv")
+aqi_path = os.path.join(base_path, "aqi_combined_1980_2024.csv")
 
 # Load data
-snow_depth_data = pd.read_csv(snow_depth_path)
-ground_water_data = pd.read_csv(ground_water_path)
-aqi_data = pd.read_csv(aqi_path)
+try:
+    snow_depth_data = pd.read_csv(snow_depth_path)
+    ground_water_data = pd.read_csv(ground_water_path)
+    aqi_data = pd.read_csv(aqi_path)
+except FileNotFoundError:
+    st.error("One or more datasets not found. Please ensure the files are in the 'data' directory.")
+    st.stop()
 
 # Merge datasets
 snow_avg = snow_depth_data.groupby("Water Year")["Snow Depth (in)"].mean().reset_index()
