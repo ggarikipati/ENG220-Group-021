@@ -1,110 +1,67 @@
 import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
 
-# Initialize session state for navigation
-if "page" not in st.session_state:
+# Load datasets
+snow_depth_path = "reshaped_snow_depth.csv"  # Ensure this file is in the same directory
+ground_water_path = "fixed_ground_water_cleaned.csv"  # Ensure this file is in the same directory
+
+# Load data
+snow_depth_data = pd.read_csv(snow_depth_path)
+ground_water_data = pd.read_csv(ground_water_path)
+
+# Streamlit app title
+st.title("Water Resource Dashboard")
+
+# Add a back-to-home button
+if st.button("⬅️ Back to Home"):
     st.session_state["page"] = "home"
+    st.experimental_rerun()
 
-# Function to switch pages
-def switch_page(page_name):
-    st.session_state["page"] = page_name
+# Sidebar for interactivity
+st.sidebar.header("Dashboard Options")
+st.sidebar.info("Customize the charts displayed on the dashboard. Select specific sites, thresholds, or top regions.")
 
-# Custom CSS for styling
-st.markdown(
-    """
-    <style>
-    body {
-        background-color: #f9fafb;
-        font-family: Arial, sans-serif;
-    }
-    .main-title {
-        font-size: 3em;
-        color: #1b4965;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .subtitle {
-        font-size: 1.5em;
-        color: #5a5a5a;
-        text-align: center;
-        margin-bottom: 40px;
-    }
-    .button-container {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-top: 50px;
-    }
-    .dashboard-button {
-        background-color: #eef2f3;
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-        width: 250px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        cursor: pointer;
-    }
-    .dashboard-button:hover {
-        background-color: #d9e4ea;
-        transform: scale(1.05);
-    }
-    .dashboard-title {
-        font-size: 1.5em;
-        color: #1b4965;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    .dashboard-description {
-        font-size: 1em;
-        color: #5a5a5a;
-    }
-    .footer {
-        text-align: center;
-        margin-top: 50px;
-        color: #5a5a5a;
-        font-size: 0.9em;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
+# Filters for charts
+selected_site = st.sidebar.selectbox(
+    "Select Site for Snow Depth Analysis",
+    sorted(snow_depth_data["Site"].unique()),
+    key="site"
 )
+threshold = st.sidebar.slider("Dry Year Snow Depth Threshold (in)", 0, 20, 10, key="threshold")
+top_n_sites = st.sidebar.slider("Number of Top Sites", 5, 20, 10, key="top_sites")
 
-# Homepage layout
-if st.session_state["page"] == "home":
-    st.markdown("<div class='main-title'>🌍 Environmental Data Hub</div>", unsafe_allow_html=True)
-    st.markdown(
-        "<div class='subtitle'>Explore insights into water resources, air quality, and their interconnections.</div>",
-        unsafe_allow_html=True,
-    )
-    
-    # Dashboard buttons
-    st.markdown(
-        """
-        <div class='button-container'>
-            <div class='dashboard-button' onclick="window.location.href='appwater.py'">
-                <div class='dashboard-title'>🌊 Water Resource Dashboard</div>
-                <div class='dashboard-description'>Analyze snow depth, water levels, and related trends.</div>
-            </div>
-            <div class='dashboard-button' onclick="window.location.href='app.py'">
-                <div class='dashboard-title'>🌫️ Air Quality Viewer</div>
-                <div class='dashboard-description'>Visualize air quality data across multiple years.</div>
-            </div>
-            <div class='dashboard-button' onclick="window.location.href='Correlation.py'">
-                <div class='dashboard-title'>🔗 Correlation Dashboard</div>
-                <div class='dashboard-description'>Discover relationships between water and air data.</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+# Display all charts in sequence
+st.header("All Charts")
 
-# Footer
-st.markdown(
-    """
-    <div class='footer'>
-        Made with ❤️ by [Your Name] | Powered by Streamlit
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+# 1. Yearly Snow Depth Trends
+st.subheader("Yearly Snow Depth Trends")
+site_data = snow_depth_data[snow_depth_data["Site"] == selected_site]
+if not site_data.empty:
+    avg_snow_per_year = site_data.groupby("Water Year")["Snow Depth (in)"].mean().reset_index()
+    plt.figure(figsize=(10, 6))
+    plt.plot(avg_snow_per_year["Water Year"], avg_snow_per_year["Snow Depth (in)"], marker='o')
+    plt.title(f"Yearly Snow Depth Trends at {selected_site}")
+    plt.xlabel("Year")
+    plt.ylabel("Average Snow Depth (in)")
+    plt.grid(True)
+    st.pyplot(plt)
+    plt.clf()
+else:
+    st.warning("No data available for the selected site.")
+
+# 2. Static Water Level Trends
+st.subheader("Static Water Level Trends")
+if "Water Year" in ground_water_data.columns:
+    avg_water_level = ground_water_data.groupby("Water Year")["Static Water Level (ft)"].mean().reset_index()
+    plt.figure(figsize=(10, 6))
+    plt.plot(avg_water_level["Water Year"], avg_water_level["Static Water Level (ft)"], marker='o')
+    plt.title("Static Water Level Trends")
+    plt.xlabel("Year")
+    plt.ylabel("Average Static Water Level (ft)")
+    plt.grid(True)
+    st.pyplot(plt)
+    plt.clf()
+else:
+    st.warning("Water Year data is not available.")
 
