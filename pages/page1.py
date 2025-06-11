@@ -47,7 +47,7 @@ if selected_cbsa:
     filtered_data = filtered_data[filtered_data["CBSA"] == selected_cbsa]
 
 # Display header
-st.title("🌫️ Air Quality Viewer Dashboard")
+st.title("Air Quality Viewer Dashboard")
 
 # Section 1: Overall AQI Trends
 st.subheader("Overall Air Quality Trends (1980–2024)")
